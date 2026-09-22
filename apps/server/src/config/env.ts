@@ -38,6 +38,12 @@ export const env = {
   maxUploadMb: int(process.env.MAX_UPLOAD_MB, 20),
   cronEnabled: (process.env.CRON_ENABLED ?? 'true') !== 'false',
   cronSchedule: process.env.CRON_SCHEDULE ?? '0 * * * *',
+  /** 增量快照的 cron：默认每周日 03:30 拍一次 */
+  snapshotSchedule: process.env.SNAPSHOT_SCHEDULE ?? '30 3 * * 0',
+  /** 快照留存周数：默认保留最近 8 周（每次自动裁剪更旧的快照） */
+  snapshotRetentionWeeks: int(process.env.SNAPSHOT_RETENTION_WEEKS, 8),
+  /** 每隔多少次快照强制做一次全量（不依赖父快照，缩短恢复链） */
+  snapshotFullEvery: int(process.env.SNAPSHOT_FULL_EVERY, 4),
   smtpUrl: process.env.SMTP_URL ?? '',
   mailFrom: process.env.MAIL_FROM ?? 'mending-log@localhost',
   webhookUrl: process.env.WEBHOOK_URL ?? '',
