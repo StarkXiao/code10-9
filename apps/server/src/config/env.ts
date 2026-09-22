@@ -38,6 +38,10 @@ export const env = {
   maxUploadMb: int(process.env.MAX_UPLOAD_MB, 20),
   cronEnabled: (process.env.CRON_ENABLED ?? 'true') !== 'false',
   cronSchedule: process.env.CRON_SCHEDULE ?? '0 * * * *',
+  /** 增量快照：每周自动留存一份，只复制新增照片（内容寻址去重） */
+  snapshotEnabled: (process.env.SNAPSHOT_ENABLED ?? 'true') !== 'false',
+  snapshotCron: process.env.SNAPSHOT_CRON ?? '40 3 * * 0',
+  snapshotKeepWeeks: int(process.env.SNAPSHOT_KEEP_WEEKS, 8),
   smtpUrl: process.env.SMTP_URL ?? '',
   mailFrom: process.env.MAIL_FROM ?? 'mending-log@localhost',
   webhookUrl: process.env.WEBHOOK_URL ?? '',

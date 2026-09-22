@@ -455,3 +455,22 @@ export async function printWorksheetHtml(damageEventId: string, opts: { token?: 
 export function damageTypeName(code: string): string {
   return DAMAGE_TYPE_LABEL[code as keyof typeof DAMAGE_TYPE_LABEL] ?? code;
 }
+
+/**
+ * 业务数据 JSON 全量导出（备份 zip 与增量快照共用同一份口径）。
+ * 指定 wardrobeId 时只导出该衣橱的数据。
+ */
+export async function collectExportData(wardrobeId?: string): Promise<Record<string, unknown>> {
+  const where = wardrobeId ? { wardrobeId } : {};
+  const [garments, damages, repairs, wears, reviews, fabricSources, reminders, dictionary] = await Promise.all([
+    prisma.garment.findMany({ where }),
+    prisma.damageEvent.findMany({ where: { garment: where } }),
+    prisma.repair.findMany({ where: { damageEvent: { garment: where } } }),
+    prisma.wearLog.findMany({ where: { garment: where } }),
+    prisma.reviewResult.findMany({ where: { repair: { damageEvent: { garment: where } } } }),
+    prisma.fabricSource.findMany({ where }),
+    prisma.reminder.findMany({ where }),
+    prisma.stitch.findMany(),
+  ]);
+  return { exportedAt: new Date().toISOString(), wardrobeId: wardrobeId ?? null, garments, damages, repairs, wears, reviews, fabricSources, reminders, dictionary };
+}
